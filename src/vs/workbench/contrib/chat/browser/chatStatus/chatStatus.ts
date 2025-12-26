@@ -14,7 +14,12 @@ export function isNewUser(chatEntitlementService: IChatEntitlementService): bool
 }
 
 export function isCompletionsEnabled(configurationService: IConfigurationService, modeId: string = '*'): boolean {
-	const result = configurationService.getValue<Record<string, boolean>>(product.defaultChatAgent.completionsEnablementSetting);
+	const completionsEnablementSetting = product.defaultChatAgent?.completionsEnablementSetting;
+	if (!completionsEnablementSetting) {
+		return false;
+	}
+
+	const result = configurationService.getValue<Record<string, boolean>>(completionsEnablementSetting);
 	if (!isObject(result)) {
 		return false;
 	}

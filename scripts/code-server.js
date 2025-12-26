@@ -44,6 +44,7 @@ function startServer(programArgs) {
 
 		console.log(`Starting server: ${entryPoint} ${programArgs.join(' ')}`);
 		const proc = cp.spawn(process.execPath, [entryPoint, ...programArgs], { env, stdio: [process.stdin, null, process.stderr] });
+
 		proc.stdout.on('data', e => {
 			const data = e.toString();
 			process.stdout.write(data);

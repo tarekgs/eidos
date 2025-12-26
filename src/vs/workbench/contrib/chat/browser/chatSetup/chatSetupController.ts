@@ -89,6 +89,12 @@ export class ChatSetupController extends Disposable {
 	}
 
 	async setup(options: IChatSetupControllerOptions = {}): Promise<ChatSetupResultValue> {
+		// This product explicitly disables the built-in chat UI. In that case we must also
+		// disable the built-in "chat setup" flow to avoid background install attempts.
+		if (this.productService.enableBuiltinChat === false || !product.defaultChatAgent?.chatExtensionId) {
+			return false;
+		}
+
 		const watch = new StopWatch(false);
 		const title = localize('setupChatProgress', "Getting chat ready...");
 		const badge = this.activityService.showViewContainerActivity(ChatViewContainerId, {

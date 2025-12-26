@@ -227,7 +227,21 @@ async function main(arch: string = process.arch): Promise<void> {
 	const version = electronVersion;
 	const electronPath = path.join(root, '.build', 'electron');
 	const versionFile = path.join(electronPath, 'version');
-	const isUpToDate = fs.existsSync(versionFile) && fs.readFileSync(versionFile, 'utf8') === `${version}`;
+	const versionMatches = fs.existsSync(versionFile) && fs.readFileSync(versionFile, 'utf8') === `${version}`;
+
+	// Ensure the platform output is present. This prevents "up-to-date" false positives
+	// when product branding changes (e.g. renaming the .app bundle on macOS).
+	const expectedOutputExists = (() => {
+		if (process.platform === 'darwin') {
+			return fs.existsSync(path.join(electronPath, `${product.nameLong}.app`, 'Contents', 'MacOS', 'Electron'));
+		}
+		if (process.platform === 'win32') {
+			return fs.existsSync(path.join(electronPath, `${product.nameLong}.exe`));
+		}
+		return fs.existsSync(path.join(electronPath, product.applicationName));
+	})();
+
+	const isUpToDate = versionMatches && expectedOutputExists;
 
 	if (!isUpToDate) {
 		await util.rimraf(electronPath)();

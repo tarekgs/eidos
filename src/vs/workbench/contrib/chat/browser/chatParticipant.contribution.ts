@@ -29,11 +29,17 @@ import { IChatAgentData, IChatAgentService } from '../common/chatAgents.js';
 import { ChatContextKeys } from '../common/chatContextKeys.js';
 import { IRawChatParticipantContribution } from '../common/chatParticipantContribTypes.js';
 import { ChatAgentLocation, ChatModeKind } from '../common/constants.js';
+import product from '../../../../platform/product/common/product.js';
 import { ChatViewId, ChatViewContainerId } from './chat.js';
 import { ChatViewPane } from './chatViewPane.js';
 
 // --- Chat Container &  View Registration
 
+const builtinChatEnabled = product.enableBuiltinChat !== false;
+
+// Always register the container to avoid runtime errors from other chat-related contributions
+// that assume the container ID exists (e.g. for badges). When disabled, we keep it empty
+// (no views registered) so `hideIfEmpty` keeps it out of the UI.
 const chatViewContainer: ViewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
 	id: ChatViewContainerId,
 	title: localize2('chat.viewContainer.label', "Chat"),
@@ -42,39 +48,42 @@ const chatViewContainer: ViewContainer = Registry.as<IViewContainersRegistry>(Vi
 	storageId: ChatViewContainerId,
 	hideIfEmpty: true,
 	order: 1,
-}, ViewContainerLocation.AuxiliaryBar, { isDefault: true, doNotRegisterOpenCommand: true });
+}, ViewContainerLocation.AuxiliaryBar, { isDefault: builtinChatEnabled, doNotRegisterOpenCommand: true });
 
-const chatViewDescriptor: IViewDescriptor = {
-	id: ChatViewId,
-	containerIcon: chatViewContainer.icon,
-	containerTitle: chatViewContainer.title.value,
-	singleViewPaneContainerTitle: chatViewContainer.title.value,
-	name: localize2('chat.viewContainer.label', "Chat"),
-	canToggleVisibility: false,
-	canMoveView: true,
-	openCommandActionDescriptor: {
-		id: ChatViewContainerId,
-		title: chatViewContainer.title,
-		mnemonicTitle: localize({ key: 'miToggleChat', comment: ['&& denotes a mnemonic'] }, "&&Chat"),
-		keybindings: {
-			primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KeyI,
-			mac: {
-				primary: KeyMod.CtrlCmd | KeyMod.WinCtrl | KeyCode.KeyI
-			}
+if (builtinChatEnabled) {
+	const chatViewDescriptor: IViewDescriptor = {
+		id: ChatViewId,
+		containerIcon: chatViewContainer.icon,
+		containerTitle: chatViewContainer.title.value,
+		singleViewPaneContainerTitle: chatViewContainer.title.value,
+		name: localize2('chat.viewContainer.label', "Chat"),
+		canToggleVisibility: false,
+		canMoveView: true,
+		openCommandActionDescriptor: {
+			id: ChatViewContainerId,
+			title: chatViewContainer.title,
+			mnemonicTitle: localize({ key: 'miToggleChat', comment: ['&& denotes a mnemonic'] }, "&&Chat"),
+			keybindings: {
+				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KeyI,
+				mac: {
+					primary: KeyMod.CtrlCmd | KeyMod.WinCtrl | KeyCode.KeyI
+				}
+			},
+			order: 1
 		},
-		order: 1
-	},
-	ctorDescriptor: new SyncDescriptor(ChatViewPane),
-	when: ContextKeyExpr.or(
-		ContextKeyExpr.or(
-			ChatContextKeys.Setup.hidden,
-			ChatContextKeys.Setup.disabled
-		)?.negate(),
-		ChatContextKeys.panelParticipantRegistered,
-		ChatContextKeys.extensionInvalid
-	)
-};
-Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([chatViewDescriptor], chatViewContainer);
+		ctorDescriptor: new SyncDescriptor(ChatViewPane),
+		when: ContextKeyExpr.or(
+			ContextKeyExpr.or(
+				ChatContextKeys.Setup.hidden,
+				ChatContextKeys.Setup.disabled
+			)?.negate(),
+			ChatContextKeys.panelParticipantRegistered,
+			ChatContextKeys.extensionInvalid
+		)
+	};
+
+	Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([chatViewDescriptor], chatViewContainer);
+}
 
 const chatParticipantExtensionPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint<IRawChatParticipantContribution[]>({
 	extensionPoint: 'chatParticipants',

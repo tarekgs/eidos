@@ -8,15 +8,21 @@ else
 fi
 
 function code() {
-	pushd $ROOT
+	pushd "$ROOT"
 
 	# Get electron, compile, built-in extensions
 	if [[ -z "${VSCODE_SKIP_PRELAUNCH}" ]]; then
 		node build/lib/preLaunch.ts
 	fi
 
+	# Ensure server entrypoint is compiled (preLaunch only checks for 'out/' existence).
+	if [ ! -e "$ROOT/out/server-main.js" ]; then
+		npm run compile
+	fi
+
 	NODE=$(node build/lib/node.ts)
-	if [ ! -e $NODE ];then
+
+	if [ ! -e "$NODE" ];then
 		# Load remote node
 		npm run gulp node
 	fi
@@ -25,7 +31,7 @@ function code() {
 
 	NODE_ENV=development \
 	VSCODE_DEV=1 \
-	$NODE $ROOT/scripts/code-server.js "$@"
+	"$NODE" "$ROOT/scripts/code-server.js" "$@"
 }
 
 code "$@"

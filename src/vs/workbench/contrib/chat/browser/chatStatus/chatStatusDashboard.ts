@@ -149,6 +149,11 @@ export class ChatStatusDashboard extends DomWidget {
 	}
 
 	private render(): void {
+		if (!defaultChat) {
+			// No default chat agent configured for this product.
+			return;
+		}
+
 		const token = cancelOnDispose(this._store);
 
 		let needsSeparator = false;
@@ -467,7 +472,7 @@ export class ChatStatusDashboard extends DomWidget {
 		if (supportsOverage && (this.chatEntitlementService.entitlement === ChatEntitlement.Pro || this.chatEntitlementService.entitlement === ChatEntitlement.ProPlus)) {
 			const manageOverageButton = disposables.add(new Button(quotaIndicator, { ...defaultButtonStyles, secondary: true, hoverDelegate: nativeHoverDelegate }));
 			manageOverageButton.label = localize('enableAdditionalUsage', "Manage paid premium requests");
-			disposables.add(manageOverageButton.onDidClick(() => this.runCommandAndClose(() => this.openerService.open(URI.parse(defaultChat.manageOverageUrl)))));
+			disposables.add(manageOverageButton.onDidClick(() => this.runCommandAndClose(() => this.openerService.open(URI.parse(defaultChat!.manageOverageUrl)))));
 		}
 
 		const update = (quota: IQuotaSnapshot | string) => {
@@ -577,11 +582,11 @@ export class ChatStatusDashboard extends DomWidget {
 	}
 
 	private createInlineSuggestionsSetting(container: HTMLElement, label: string, modeId: string | undefined, disposables: DisposableStore): void {
-		this.createSetting(container, [defaultChat.completionsEnablementSetting], label, this.getCompletionsSettingAccessor(modeId), disposables);
+		this.createSetting(container, [defaultChat!.completionsEnablementSetting], label, this.getCompletionsSettingAccessor(modeId), disposables);
 	}
 
 	private getCompletionsSettingAccessor(modeId = '*'): ISettingsAccessor {
-		const settingId = defaultChat.completionsEnablementSetting;
+		const settingId = defaultChat!.completionsEnablementSetting;
 
 		return {
 			readSetting: () => isCompletionsEnabled(this.configurationService, modeId),
@@ -603,8 +608,8 @@ export class ChatStatusDashboard extends DomWidget {
 	}
 
 	private createNextEditSuggestionsSetting(container: HTMLElement, label: string, completionsSettingAccessor: ISettingsAccessor, disposables: DisposableStore): void {
-		const nesSettingId = defaultChat.nextEditSuggestionsSetting;
-		const completionsSettingId = defaultChat.completionsEnablementSetting;
+		const nesSettingId = defaultChat!.nextEditSuggestionsSetting;
+		const completionsSettingId = defaultChat!.completionsEnablementSetting;
 		const resource = EditorResourceAccessor.getOriginalUri(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
 
 		const checkbox = this.createSetting(container, [nesSettingId, completionsSettingId], label, {
@@ -709,7 +714,7 @@ export class ChatStatusDashboard extends DomWidget {
 		}));
 
 		disposables.add(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration(defaultChat.completionsEnablementSetting)) {
+			if (e.affectsConfiguration(defaultChat!.completionsEnablementSetting)) {
 				button.enabled = isEnabled();
 			}
 			updateIntervalTimer();

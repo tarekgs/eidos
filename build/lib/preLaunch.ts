@@ -12,7 +12,9 @@ const rootDir = path.resolve(import.meta.dirname, '..', '..');
 function runProcess(command: string, args: ReadonlyArray<string> = []) {
 	return new Promise<void>((resolve, reject) => {
 		const child = spawn(command, args, { cwd: rootDir, stdio: 'inherit', env: process.env, shell: process.platform === 'win32' });
-		child.on('exit', err => !err ? resolve() : process.exit(err ?? 1));
+		child.on('exit', err => {
+			!err ? resolve() : process.exit(err ?? 1);
+		});
 		child.on('error', reject);
 	});
 }
@@ -37,7 +39,17 @@ async function getElectron() {
 }
 
 async function ensureCompiled() {
-	if (!(await exists('out'))) {
+	const outExists = await exists('out');
+	const outMainExists = await exists('out/main.js');
+
+	// If the folder exists but is incomplete (e.g. empty), recompile.
+	// This prevents launching Electron without the entrypoint at out/main.js.
+	if (outExists && !outMainExists) {
+		await runProcess(npm, ['run', 'compile']);
+		return;
+	}
+
+	if (!outExists) {
 		await runProcess(npm, ['run', 'compile']);
 	}
 }

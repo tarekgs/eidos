@@ -94,6 +94,16 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 	public readonly remoteAuthority = null;
 	public extensions: ExtensionHostExtensions | null = null;
 
+	// #region agent log
+	private _agentStartSeq = 0;
+	private _agentLastStderrLines: string[] = [];
+	private _agentRedact(line: string): string {
+		return line
+			.replace(/\/Users\/[^/]+\//g, '/Users/<user>/')
+			.slice(0, 400);
+	}
+	// #endregion agent log
+
 	private readonly _onExit: Emitter<[number, string]> = this._register(new Emitter<[number, string]>());
 	public readonly onExit: Event<[number, string]> = this._onExit.event;
 
@@ -165,6 +175,9 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 			return;
 		}
 		this._terminating = true;
+		// #region agent log
+		globalThis.fetch?.('http://127.0.0.1:7244/ingest/3c142288-1dbf-4b15-8c6d-d0685cacbd9f', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1', location: 'localProcessExtensionHost.ts:dispose', message: 'NativeLocalProcessExtensionHost.dispose', data: { terminating: this._terminating, hasMessageProtocol: !!this._messageProtocol, pid: this.pid }, timestamp: Date.now() }) }).catch(() => { });
+		// #endregion agent log
 		super.dispose();
 		this._messageProtocol = null;
 	}
@@ -175,6 +188,10 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 			throw new CancellationError();
 		}
 
+		// #region agent log
+		globalThis.fetch?.('http://127.0.0.1:7244/ingest/3c142288-1dbf-4b15-8c6d-d0685cacbd9f', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H2', location: 'localProcessExtensionHost.ts:start', message: 'NativeLocalProcessExtensionHost.start called', data: { terminating: this._terminating, hasMessageProtocol: !!this._messageProtocol, pid: this.pid }, timestamp: Date.now() }) }).catch(() => { });
+		// #endregion agent log
+
 		if (!this._messageProtocol) {
 			this._messageProtocol = this._start();
 		}
@@ -183,11 +200,20 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 	}
 
 	private async _start(): Promise<IMessagePassingProtocol> {
+		// #region agent log
+		const agentStartId = ++this._agentStartSeq;
+		globalThis.fetch?.('http://127.0.0.1:7244/ingest/3c142288-1dbf-4b15-8c6d-d0685cacbd9f', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H2', location: 'localProcessExtensionHost.ts:_start', message: 'NativeLocalProcessExtensionHost._start entry', data: { agentStartId, terminating: this._terminating }, timestamp: Date.now() }) }).catch(() => { });
+		// #endregion agent log
+
 		const [extensionHostCreationResult, portNumber, processEnv] = await Promise.all([
 			this._extensionHostStarter.createExtensionHost(),
 			this._tryFindDebugPort(),
 			this._shellEnvironmentService.getShellEnv(),
 		]);
+
+		// #region agent log
+		globalThis.fetch?.('http://127.0.0.1:7244/ingest/3c142288-1dbf-4b15-8c6d-d0685cacbd9f', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1', location: 'localProcessExtensionHost.ts:_start:afterPromiseAll', message: 'NativeLocalProcessExtensionHost._start after Promise.all', data: { agentStartId, terminating: this._terminating, extHostId: extensionHostCreationResult.id, portNumber }, timestamp: Date.now() }) }).catch(() => { });
+		// #endregion agent log
 
 		this._extensionHostProcess = new ExtensionHostProcess(extensionHostCreationResult.id, this._extensionHostStarter);
 
@@ -249,8 +275,8 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 
 		// Catch all output coming from the extension host process
 		type Output = { data: string; format: string[] };
-		const onStdout = this._handleProcessOutputStream(this._extensionHostProcess.onStdout);
-		const onStderr = this._handleProcessOutputStream(this._extensionHostProcess.onStderr);
+		const onStdout = this._handleProcessOutputStream(this._extensionHostProcess.onStdout, 'stdout');
+		const onStderr = this._handleProcessOutputStream(this._extensionHostProcess.onStderr, 'stderr');
 		const onOutput = Event.any(
 			Event.map(onStdout.event, o => ({ data: `%c${o}`, format: [''] })),
 			Event.map(onStderr.event, o => ({ data: `%c${o}`, format: ['color: red'] }))
@@ -529,10 +555,15 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 			return;
 		}
 
+		// #region agent log
+		const stderrTail = this._agentLastStderrLines.slice(-5).join('\n');
+		globalThis.fetch?.('http://127.0.0.1:7244/ingest/3c142288-1dbf-4b15-8c6d-d0685cacbd9f', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H3', location: 'localProcessExtensionHost.ts:_onExtHostProcessExit', message: 'Extension host process exited unexpectedly', data: { code, signal, pid: this.pid, stderrTail }, timestamp: Date.now() }) }).catch(() => { });
+		// #endregion agent log
+
 		this._onExit.fire([code, signal]);
 	}
 
-	private _handleProcessOutputStream(stream: Event<string>) {
+	private _handleProcessOutputStream(stream: Event<string>, streamKind: 'stdout' | 'stderr') {
 		let last = '';
 		let isOmitting = false;
 		const event = new Emitter<string>();
@@ -557,6 +588,14 @@ export class NativeLocalProcessExtensionHost extends Disposable implements IExte
 				} else if (line === NativeLogMarkers.Start) {
 					isOmitting = true;
 				} else if (line.length) {
+					// #region agent log
+					if (streamKind === 'stderr') {
+						this._agentLastStderrLines.push(this._agentRedact(line));
+						if (this._agentLastStderrLines.length > 20) {
+							this._agentLastStderrLines.splice(0, this._agentLastStderrLines.length - 20);
+						}
+					}
+					// #endregion agent log
 					event.fire(line + '\n');
 				}
 			}

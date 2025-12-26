@@ -915,9 +915,9 @@ export class GettingStartedPage extends EditorPane {
 			onShowOnStartupChanged();
 		}));
 
+		const productName = this.productService.nameLong.replace(/\s+Dev$/, '');
 		const header = $('.header', {},
-			$('h1.product-name.caption', {}, this.productService.nameLong),
-			$('p.subtitle.description', {}, localize({ key: 'gettingStarted.editingEvolved', comment: ['Shown as subtitle on the Welcome page.'] }, "Editing evolved"))
+			$('h1.product-name.caption', {}, productName),
 		);
 
 		const leftColumn = $('.categories-column.categories-column-left', {},);

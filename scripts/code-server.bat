@@ -16,6 +16,11 @@ if "%VSCODE_SKIP_PRELAUNCH%"=="" (
 	node build/lib/preLaunch.ts
 )
 
+:: Ensure server entrypoint is compiled (preLaunch only checks for 'out\' existence)
+if not exist "out\server-main.js" (
+	call npm run compile
+)
+
 :: Node executable
 FOR /F "tokens=*" %%g IN ('node build/lib/node.ts') do (SET NODE=%%g)
 

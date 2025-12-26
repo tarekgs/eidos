@@ -332,7 +332,8 @@ const marketplaceWebExtensionsExclude = new Set([
 	'ms-vscode.node-debug2',
 	'ms-vscode.js-debug-companion',
 	'ms-vscode.js-debug',
-	'ms-vscode.vscode-js-profile-table'
+	'ms-vscode.vscode-js-profile-table',
+	'cweijan.vscode-office'
 ]);
 
 const productJson = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '../../product.json'), 'utf8'));

@@ -232,10 +232,16 @@ export interface IProductConfiguration {
 	readonly commonlyUsedSettings?: string[];
 	readonly aiGeneratedWorkspaceTrust?: IAiGeneratedWorkspaceTrust;
 
-	readonly defaultChatAgent: IDefaultChatAgent;
+	readonly defaultChatAgent?: IDefaultChatAgent;
 	readonly chatParticipantRegistry?: string;
 	readonly chatSessionRecommendations?: IChatSessionRecommendation[];
 	readonly emergencyAlertUrl?: string;
+
+	/**
+	 * When set to `false`, the built-in VS Code Chat view container (`workbench.panel.chat`)
+	 * will be hidden/disabled by product-level gating.
+	 */
+	readonly enableBuiltinChat?: boolean;
 
 	readonly remoteDefaultExtensionsIfInstalledLocally?: string[];
 

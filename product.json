@@ -1,6 +1,6 @@
 {
-	"nameShort": "Code - OSS",
-	"nameLong": "Code - OSS",
+	"nameShort": "Axon",
+	"nameLong": "Axon",
 	"applicationName": "code-oss",
 	"dataFolderName": ".vscode-oss",
 	"win32MutexName": "vscodeoss",
@@ -13,15 +13,15 @@
 	"serverApplicationName": "code-server-oss",
 	"serverDataFolderName": ".vscode-server-oss",
 	"tunnelApplicationName": "code-tunnel-oss",
-	"win32DirName": "Microsoft Code OSS",
-	"win32NameVersion": "Microsoft Code OSS",
+	"win32DirName": "Axon",
+	"win32NameVersion": "Axon",
 	"win32RegValueName": "CodeOSS",
 	"win32x64AppId": "{{D77B7E06-80BA-4137-BCF4-654B95CCEBC5}",
 	"win32arm64AppId": "{{D1ACE434-89C5-48D1-88D3-E2991DF85475}",
 	"win32x64UserAppId": "{{CC6B787D-37A0-49E8-AE24-8559A032BE0C}",
 	"win32arm64UserAppId": "{{3AEBF0C8-F733-4AD4-BADE-FDB816D53D7B}",
 	"win32AppUserModelId": "Microsoft.CodeOSS",
-	"win32ShellNameShort": "C&ode - OSS",
+	"win32ShellNameShort": "A&xon",
 	"win32TunnelServiceMutex": "vscodeoss-tunnelservice",
 	"win32TunnelMutex": "vscodeoss-tunnel",
 	"darwinBundleIdentifier": "com.visualstudio.code.oss",
@@ -81,68 +81,43 @@
 				},
 				"publisherDisplayName": "Microsoft"
 			}
-		}
-	],
-	"defaultChatAgent": {
-		"extensionId": "GitHub.copilot",
-		"chatExtensionId": "GitHub.copilot-chat",
-		"documentationUrl": "https://aka.ms/github-copilot-overview",
-		"termsStatementUrl": "https://aka.ms/github-copilot-terms-statement",
-		"privacyStatementUrl": "https://aka.ms/github-copilot-privacy-statement",
-		"skusDocumentationUrl": "https://aka.ms/github-copilot-plans",
-		"publicCodeMatchesUrl": "https://aka.ms/github-copilot-match-public-code",
-		"manageSettingsUrl": "https://aka.ms/github-copilot-settings",
-		"managePlanUrl": "https://aka.ms/github-copilot-manage-plan",
-		"manageOverageUrl": "https://aka.ms/github-copilot-manage-overage",
-		"upgradePlanUrl": "https://aka.ms/github-copilot-upgrade-plan",
-		"signUpUrl": "https://aka.ms/github-sign-up",
-		"provider": {
-			"default": {
-				"id": "github",
-				"name": "GitHub"
-			},
-			"enterprise": {
-				"id": "github-enterprise",
-				"name": "GHE.com"
-			},
-			"google": {
-				"id": "google",
-				"name": "Google"
-			},
-			"apple": {
-				"id": "apple",
-				"name": "Apple"
+		},
+		{
+			"name": "cweijan.vscode-office",
+			"version": "3.5.4",
+			"sha256": "c4bc4c7b2cf1c90b04eb58520aef99e583adca477f05e9ec1a46ace25826741e",
+			"repo": "https://github.com/cweijan/vscode-office",
+			"vsix": "cweijan.vscode-office-3.5.4.vsix",
+			"metadata": {
+				"id": "936b1be7-8595-4f76-b102-aa6bb915da73",
+				"publisherId": {
+					"publisherId": "43004267-e6e4-497f-b826-dda371e4ec49",
+					"publisherName": "cweijan",
+					"displayName": "Database Client",
+					"flags": "verified"
+				},
+				"publisherDisplayName": "Database Client"
 			}
 		},
-		"providerUriSetting": "github-enterprise.uri",
-		"providerScopes": [
-			[
-				"read:user",
-				"user:email",
-				"repo",
-				"workflow"
-			],
-			[
-				"user:email"
-			],
-			[
-				"read:user"
-			]
-		],
-		"entitlementUrl": "https://api.github.com/copilot_internal/user",
-		"entitlementSignupLimitedUrl": "https://api.github.com/copilot_internal/subscribe_limited_user",
-		"chatQuotaExceededContext": "github.copilot.chat.quotaExceeded",
-		"completionsQuotaExceededContext": "github.copilot.completions.quotaExceeded",
-		"walkthroughCommand": "github.copilot.open.walkthrough",
-		"completionsMenuCommand": "github.copilot.toggleStatusMenu",
-		"completionsRefreshTokenCommand": "github.copilot.signIn",
-		"chatRefreshTokenCommand": "github.copilot.refreshToken",
-		"generateCommitMessageCommand": "github.copilot.git.generateCommitMessage",
-		"resolveMergeConflictsCommand": "github.copilot.git.resolveMergeConflicts",
-		"completionsAdvancedSetting": "github.copilot.advanced",
-		"completionsEnablementSetting": "github.copilot.enable",
-		"nextEditSuggestionsSetting": "github.copilot.nextEditSuggestions.enabled"
-	},
+		{
+			"name": "liwei.relax-eyes-theme",
+			"version": "1.1.0",
+			"sha256": "119de4c017be514c50b1ba74dfa8f3dee98d4ebdadecac7b6eaf379a80f95e6e",
+			"repo": "https://github.com/lwsgh/vscode-themes",
+			"vsix": "liwei.relax-eyes-theme-1.1.0.vsix",
+			"metadata": {
+				"id": "9e5b9ca0-fd5d-4af2-a796-874fb24ba17c",
+				"publisherId": {
+					"publisherId": "6fb46c13-345b-4536-ba91-9a934ba9bebd",
+					"publisherName": "liwei",
+					"displayName": "liwei",
+					"flags": "unverified"
+				},
+				"publisherDisplayName": "liwei"
+			}
+		}
+	],
+	"enableBuiltinChat": false,
 	"trustedExtensionAuthAccess": {
 		"github": [
 			"GitHub.copilot-chat"
