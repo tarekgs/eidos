@@ -19,6 +19,8 @@ export const all = Object.freeze<string[]>([
 	'*',
 	'build/**/*',
 	'extensions/**/*',
+	'!extensions/openai.chatgpt/bin/**',
+	'!extensions/openai.chatgpt/webview/**',
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',

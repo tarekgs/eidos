@@ -2,6 +2,7 @@
 .cache
 npm-debug.log
 Thumbs.db
+*.vsix
 node_modules/
 .build/
 .vscode/extensions/**/out/
@@ -23,3 +24,4 @@ product.overrides.json
 *.tsbuildinfo
 .vscode-test
 vscode-telemetry-docs/
+.cursor/debug.log
